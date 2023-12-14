@@ -145,7 +145,7 @@ def solve_wumpus_world(updated_map):
     safe_rooms = []
     stench_rooms = []
     breeze_rooms = []
-    visited_rooms = []
+    path_explored = []
     empty_rooms = []
 
     # Move until all gold is found or no more way to move
@@ -168,7 +168,7 @@ def solve_wumpus_world(updated_map):
             path=find_path(current_position, final_position, safe_rooms) 
             for room in path:
                 current_position = room
-                visited_rooms.append(room)
+                path_explored.append(room)
                 score -= 10
             continue
         # Check if there is gold in the current room
@@ -179,7 +179,7 @@ def solve_wumpus_world(updated_map):
             else:
                 updated_map[current_position[0]][current_position[1]]=removechar('G',updated_map[current_position[0]][current_position[1]])
             score += 1000
-            visited_rooms.append('Gold is collected')
+            path_explored.append('Gold is collected')
             gold_found = True
         # Check if this is empty room
         if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S') and not ifcontains(updated_map[current_position[0]][current_position[1]], 'B'):
@@ -192,10 +192,10 @@ def solve_wumpus_world(updated_map):
                 if i not in safe_rooms:
                     safe_rooms.append(i)
             for i in neigh:
-                if i not in visited_rooms:
+                if i not in path_explored:
                     # Move to the next room
                     current_position = i
-                    visited_rooms.append(i)
+                    path_explored.append(i)
                     score -= 10
                     move_to_next_room = True
                     break
@@ -212,7 +212,7 @@ def solve_wumpus_world(updated_map):
             if path:
                     for room in path:
                         current_position = room
-                        visited_rooms.append(room)
+                        path_explored.append(room)
                         score -= 10
                     continue
         if ifcontains(updated_map[current_position[0]][current_position[1]], 'B'):
@@ -223,15 +223,15 @@ def solve_wumpus_world(updated_map):
             if path:
                 for room in path:
                     current_position = room
-                    visited_rooms.append(room)
+                    path_explored.append(room)
                     score -= 10
                 continue
         neigh = get_neighbors(updated_map, current_position)
         for i in neigh:
-            if i in safe_rooms and i not in visited_rooms:
+            if i in safe_rooms and i not in path_explored:
                 # Move to the next room
                 current_position = i
-                visited_rooms.append(i)
+                path_explored.append(i)
                 score -= 10
                 move_to_next_room = True
                 break
@@ -240,7 +240,7 @@ def solve_wumpus_world(updated_map):
         
         # Check if there is a safe room but not visited
         for i in safe_rooms:
-            if i not in visited_rooms:
+            if i not in path_explored:
                 # Find a path to the target room through the safe rooms
                 
 
@@ -248,7 +248,7 @@ def solve_wumpus_world(updated_map):
                 if path:
                     for room in path:
                         current_position = room
-                        visited_rooms.append(room)
+                        path_explored.append(room)
                         score -= 10
                     move_to_next_room = True
                     break
@@ -265,70 +265,70 @@ def solve_wumpus_world(updated_map):
                 if path:
                     for room in path:
                         current_position = room
-                        visited_rooms.append(room)
+                        path_explored.append(room)
                         score -= 10
                 foundstench=True
         if foundstench:
             if current_position[0]>0:
                 # Shoot up
-                visited_rooms.append('Shoot the arrow up')
+                path_explored.append('Shoot the arrow up')
                 score -= 100
                 for i in range(current_position[0], -1, -1):
                     if ifcontains(updated_map[i][current_position[1]], 'W'):
                         if updated_map[i][current_position[1]] == 'W':
                             updated_map[i][current_position[1]] = '-'  # The wumpus is killed
-                            visited_rooms.append('A Wumpus is killed')
+                            path_explored.append('A Wumpus is killed')
                         else:
                             updated_map[i][current_position[1]] = removechar('W', updated_map[i][current_position[1]])
-                            visited_rooms.append('A Wumpus is killed')
+                            path_explored.append('A Wumpus is killed')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
                     stench_rooms.remove(current_position)
                     continue
             if current_position[0]<size-1:
                 # Shoot down
-                visited_rooms.append('Shoot the arrow down')
+                path_explored.append('Shoot the arrow down')
                 score -= 100
                 for i in range(current_position[0], size):
                     if ifcontains(updated_map[i][current_position[1]], 'W'):
                         if updated_map[i][current_position[1]] == 'W':
                             updated_map[i][current_position[1]] = '-'
-                            visited_rooms.append('A Wumpus is killed')
+                            path_explored.append('A Wumpus is killed')
                         else:
                             updated_map[i][current_position[1]] = removechar('W', updated_map[i][current_position[1]])
-                            visited_rooms.append('A Wumpus is killed')
+                            path_explored.append('A Wumpus is killed')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
                     stench_rooms.remove(current_position)
                     continue
             if current_position[1]>0:
                 # Shoot left
-                visited_rooms.append('Shoot the arrow left')
+                path_explored.append('Shoot the arrow left')
                 score -= 100
                 for i in range(current_position[1], -1, -1):
                     if ifcontains(updated_map[current_position[0]][i], 'W'):
                         if updated_map[current_position[0]][i] == 'W':
                             updated_map[current_position[0]][i] = '-'
-                            visited_rooms.append('A Wumpus is killed')
+                            path_explored.append('A Wumpus is killed')
                         else:
                             updated_map[current_position[0]][i] = removechar('W', updated_map[current_position[0]][i])
-                            visited_rooms.append('A Wumpus is killed')
+                            path_explored.append('A Wumpus is killed')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
                     stench_rooms.remove(current_position)
                     continue
             if current_position[1]<size-1:
                 # Shoot right
-                visited_rooms.append('Shoot the arrow right')
+                path_explored.append('Shoot the arrow right')
                 score -= 100
                 for i in range(current_position[1], size):
                     if ifcontains(updated_map[current_position[0]][i], 'W'):
                         if updated_map[current_position[0]][i] == 'W':
                             updated_map[current_position[0]][i] = '-'
-                            visited_rooms.append('A Wumpus is killed')
+                            path_explored.append('A Wumpus is killed')
                         else:
                             updated_map[current_position[0]][i] = removechar('W', updated_map[current_position[0]][i])
-                            visited_rooms.append('A Wumpus is killed')
+                            path_explored.append('A Wumpus is killed')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
                     stench_rooms.remove(current_position)
@@ -339,36 +339,36 @@ def solve_wumpus_world(updated_map):
             if path:
                 for room in path:
                     current_position = room
-                    visited_rooms.append(room)
+                    path_explored.append(room)
                     score -= 10
         neigh=get_neighbors(updated_map,current_position)
         for i in neigh:
-            if i not in visited_rooms:
+            if i not in path_explored:
                 # Move to the next room
                 current_position = i
-                visited_rooms.append(i)
+                path_explored.append(i)
                 score -= 10
                 move_to_next_room = True
                 break
         if move_to_next_room:
             continue 
                 
-    unique_visited_rooms = []
+    unique_path_explored = []
 
-    for i in range(len(visited_rooms) - 1):
-        if visited_rooms[i] == 'Gold is collected' or visited_rooms[i] == 'A Wumpus is killed':
-            unique_visited_rooms.append(visited_rooms[i])
+    for i in range(len(path_explored) - 1):
+        if path_explored[i] == 'Gold is collected' or path_explored[i] == 'A Wumpus is killed':
+            unique_path_explored.append(path_explored[i])
             continue
-        if visited_rooms[i] != visited_rooms[i + 1]:
-            unique_visited_rooms.append(visited_rooms[i])
+        if path_explored[i] != path_explored[i + 1]:
+            unique_path_explored.append(path_explored[i])
 
     # Xử lý phần tử cuối cùng của danh sách (nếu cần)
-    if visited_rooms:
-        unique_visited_rooms.append(visited_rooms[-1])
-    rmv = len(visited_rooms) - len(unique_visited_rooms)
+    if path_explored:
+        unique_path_explored.append(path_explored[-1])
+    rmv = len(path_explored) - len(unique_path_explored)
     score+=rmv*10
-    visited_rooms = unique_visited_rooms
-    print(visited_rooms)
+    path_explored = unique_path_explored
+    print(path_explored)
     print('Score: ', score)
            
         

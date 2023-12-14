@@ -136,13 +136,11 @@ def solve_wumpus_world(updated_map):
             break
         
     # Initialize variables
-   
-    final_position = (size-1, 0)
-    exit_cave = False
-    current_position = start_position
-    arrows = float('inf')
-    gold_found = False
     game_over = False
+    final_position = (size-1, 0)
+    current_position = start_position
+    gold_found = False
+    exit_cave = False
     safe_rooms = []
     stench_rooms = []
     breeze_rooms = []

@@ -356,6 +356,9 @@ def solve_wumpus_world(updated_map):
     unique_visited_rooms = []
 
     for i in range(len(visited_rooms) - 1):
+        if visited_rooms[i] == 'Gold is collected' or visited_rooms[i] == 'A Wumpus is killed':
+            unique_visited_rooms.append(visited_rooms[i])
+            continue
         if visited_rooms[i] != visited_rooms[i + 1]:
             unique_visited_rooms.append(visited_rooms[i])
 

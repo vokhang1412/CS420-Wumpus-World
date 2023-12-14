@@ -113,12 +113,13 @@ def find_path(current_position, target_room, safe_rooms):
     while queue:
         room, path = queue.popleft()
         if room == target_room:
-            return path + [room]
+            return path[1:] + [room]
                         
         visited.add(room)
         for neighbor in get_neighbors(updated_map, room):
             if neighbor in safe_rooms and neighbor not in visited:
                 queue.append((neighbor, path + [room]))
+    
 
     return None
 def solve_wumpus_world(updated_map):
@@ -167,6 +168,8 @@ def solve_wumpus_world(updated_map):
         if exit_cave and gold_found:  
             path=find_path(current_position, final_position, safe_rooms) 
             for room in path:
+                if current_position == room:
+                            continue
                 current_position = room
                 path_explored.append(room)
                 score -= 10
@@ -203,7 +206,8 @@ def solve_wumpus_world(updated_map):
                 continue    
         if ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
             if ifcontains(updated_map[current_position[0]][current_position[1]], 'B'):
-                breeze_rooms.append(current_position)
+                if current_position not in breeze_rooms:
+                    breeze_rooms.append(current_position)
             # The current room has stench
             if current_position not in stench_rooms:
                 stench_rooms.append(current_position)
@@ -211,13 +215,16 @@ def solve_wumpus_world(updated_map):
             path = find_path(current_position, empty_rooms[-1], safe_rooms)
             if path:
                     for room in path:
+                        if current_position == room:
+                            continue
                         current_position = room
                         path_explored.append(room)
                         score -= 10
                     continue
         if ifcontains(updated_map[current_position[0]][current_position[1]], 'B'):
             # The current room has stench
-            breeze_rooms.append(current_position)
+            if current_position not in breeze_rooms:
+                breeze_rooms.append(current_position)
             # move to the nearest empty room
             path = find_path(current_position, empty_rooms[-1], safe_rooms)
             if path:
@@ -247,6 +254,8 @@ def solve_wumpus_world(updated_map):
                 path = find_path(current_position, i, safe_rooms)
                 if path:
                     for room in path:
+                        if current_position == room:
+                            continue
                         current_position = room
                         path_explored.append(room)
                         score -= 10
@@ -264,7 +273,10 @@ def solve_wumpus_world(updated_map):
                 path = find_path(current_position, stench_rooms[0], safe_rooms)
                 if path:
                     for room in path:
+                        if current_position == room:
+                            continue
                         current_position = room
+                        
                         path_explored.append(room)
                         score -= 10
                 foundstench=True
@@ -338,6 +350,8 @@ def solve_wumpus_world(updated_map):
             path=find_path(current_position, breeze_rooms[-1], safe_rooms)  
             if path:
                 for room in path:
+                    if current_position == room:
+                            continue
                     current_position = room
                     path_explored.append(room)
                     score -= 10
@@ -352,17 +366,7 @@ def solve_wumpus_world(updated_map):
                 break
         if move_to_next_room:
             continue 
-                
-    unique_path_explored = []
 
-    for i in range(len(path_explored) - 1):
-        if path_explored[i] != path_explored[i + 1]:
-            unique_path_explored.append(path_explored[i])
-    if path_explored:
-        unique_path_explored.append(path_explored[-1])
-    rmv = len(path_explored) - len(unique_path_explored)
-    score+=rmv*10
-    path_explored = unique_path_explored
     return path_explored, score
            
         

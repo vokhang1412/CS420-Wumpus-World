@@ -179,7 +179,7 @@ def solve_wumpus_world(updated_map):
             else:
                 updated_map[current_position[0]][current_position[1]]=removechar('G',updated_map[current_position[0]][current_position[1]])
             score += 1000
-            path_explored.append('Gold is collected')
+            path_explored.append('G'+current_position.__str__())
             gold_found = True
         # Check if this is empty room
         if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S') and not ifcontains(updated_map[current_position[0]][current_position[1]], 'B'):
@@ -277,10 +277,10 @@ def solve_wumpus_world(updated_map):
                     if ifcontains(updated_map[i][current_position[1]], 'W'):
                         if updated_map[i][current_position[1]] == 'W':
                             updated_map[i][current_position[1]] = '-'  # The wumpus is killed
-                            path_explored.append('A Wumpus is killed')
+                            path_explored.append('W ('+i.__str__()+', '+current_position[1].__str__()+')')
                         else:
                             updated_map[i][current_position[1]] = removechar('W', updated_map[i][current_position[1]])
-                            path_explored.append('A Wumpus is killed')
+                            path_explored.append('W ('+i.__str__()+', '+current_position[1].__str__()+')')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
                     stench_rooms.remove(current_position)
@@ -293,10 +293,10 @@ def solve_wumpus_world(updated_map):
                     if ifcontains(updated_map[i][current_position[1]], 'W'):
                         if updated_map[i][current_position[1]] == 'W':
                             updated_map[i][current_position[1]] = '-'
-                            path_explored.append('A Wumpus is killed')
+                            path_explored.append('W ('+i.__str__()+', '+current_position[1].__str__()+')')
                         else:
                             updated_map[i][current_position[1]] = removechar('W', updated_map[i][current_position[1]])
-                            path_explored.append('A Wumpus is killed')
+                            path_explored.append('W ('+i.__str__()+', '+current_position[1].__str__()+')')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
                     stench_rooms.remove(current_position)
@@ -309,10 +309,10 @@ def solve_wumpus_world(updated_map):
                     if ifcontains(updated_map[current_position[0]][i], 'W'):
                         if updated_map[current_position[0]][i] == 'W':
                             updated_map[current_position[0]][i] = '-'
-                            path_explored.append('A Wumpus is killed')
+                            path_explored.append('W ('+current_position[0].__str__()+', '+i.__str__()+')')
                         else:
                             updated_map[current_position[0]][i] = removechar('W', updated_map[current_position[0]][i])
-                            path_explored.append('A Wumpus is killed')
+                            path_explored.append('W ('+current_position[0].__str__()+', '+i.__str__()+')')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
                     stench_rooms.remove(current_position)
@@ -325,10 +325,10 @@ def solve_wumpus_world(updated_map):
                     if ifcontains(updated_map[current_position[0]][i], 'W'):
                         if updated_map[current_position[0]][i] == 'W':
                             updated_map[current_position[0]][i] = '-'
-                            path_explored.append('A Wumpus is killed')
+                            path_explored.append('W ('+current_position[0].__str__()+', '+i.__str__()+')')
                         else:
                             updated_map[current_position[0]][i] = removechar('W', updated_map[current_position[0]][i])
-                            path_explored.append('A Wumpus is killed')
+                            path_explored.append('W ('+current_position[0].__str__()+', '+i.__str__()+')')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
                     stench_rooms.remove(current_position)
@@ -356,20 +356,14 @@ def solve_wumpus_world(updated_map):
     unique_path_explored = []
 
     for i in range(len(path_explored) - 1):
-        if path_explored[i] == 'Gold is collected' or path_explored[i] == 'A Wumpus is killed':
-            unique_path_explored.append(path_explored[i])
-            continue
         if path_explored[i] != path_explored[i + 1]:
             unique_path_explored.append(path_explored[i])
-
-    # Xử lý phần tử cuối cùng của danh sách (nếu cần)
     if path_explored:
         unique_path_explored.append(path_explored[-1])
     rmv = len(path_explored) - len(unique_path_explored)
     score+=rmv*10
     path_explored = unique_path_explored
-    print(path_explored)
-    print('Score: ', score)
+    return path_explored, score
            
         
         
@@ -379,6 +373,7 @@ def solve_wumpus_world(updated_map):
 file_path = 'map2.txt'
 map = read_map(file_path)
 updated_map = update_map(map)
-print(updated_map)
-solve_wumpus_world(updated_map)
+path, totalscore = solve_wumpus_world(updated_map)
+print('Path explored: ', path)
+print('Score: ', totalscore)
                     

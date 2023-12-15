@@ -172,6 +172,11 @@ def solve_wumpus_world(updated_map):
                 path_explored.append(room)
                 score -= 10
             continue
+        # Check if this room in stench room but now don't have stench
+        if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
+            if current_position in stench_rooms:
+                stench_rooms.remove(current_position)
+    
         # Check if there is gold in the current room
         if 'G' in updated_map[current_position[0]][current_position[1]]:
             # Collect the gold and update the map
@@ -278,9 +283,14 @@ def solve_wumpus_world(updated_map):
                         path_explored.append(room)
                         score -= 10
                 foundstench=True
+        if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
+            if current_position in stench_rooms:
+                stench_rooms.remove(current_position)
+                continue
         if foundstench:
             if current_position[0]>0 and (current_position[0]-1,current_position[1]) not in safe_rooms:
                 # Shoot up
+                
                 path_explored.append('Shoot the arrow up')
                 score -= 100
                 for i in range(current_position[0], -1, -1):
@@ -297,6 +307,7 @@ def solve_wumpus_world(updated_map):
                     continue
             if current_position[0]<size-1 and (current_position[0]+1,current_position[1]) not in safe_rooms:
                 # Shoot down
+                
                 path_explored.append('Shoot the arrow down')
                 score -= 100
                 for i in range(current_position[0], size):
@@ -313,6 +324,7 @@ def solve_wumpus_world(updated_map):
                     continue
             if current_position[1]>0 and (current_position[0],current_position[1]-1) not in safe_rooms:
                 # Shoot left
+                
                 path_explored.append('Shoot the arrow left')
                 score -= 100
                 for i in range(current_position[1], -1, -1):
@@ -328,6 +340,7 @@ def solve_wumpus_world(updated_map):
                     stench_rooms.remove(current_position)
                     continue
             if current_position[1]<size-1 and (current_position[0],current_position[1]+1) not in safe_rooms:
+                
                 # Shoot right
                 path_explored.append('Shoot the arrow right')
                 score -= 100

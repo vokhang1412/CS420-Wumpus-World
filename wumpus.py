@@ -279,7 +279,7 @@ def solve_wumpus_world(updated_map):
                         score -= 10
                 foundstench=True
         if foundstench:
-            if current_position[0]>0:
+            if current_position[0]>0 and (current_position[0]-1,current_position[1]) not in safe_rooms:
                 # Shoot up
                 path_explored.append('Shoot the arrow up')
                 score -= 100
@@ -295,7 +295,7 @@ def solve_wumpus_world(updated_map):
                 if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
                     stench_rooms.remove(current_position)
                     continue
-            if current_position[0]<size-1:
+            if current_position[0]<size-1 and (current_position[0]+1,current_position[1]) not in safe_rooms:
                 # Shoot down
                 path_explored.append('Shoot the arrow down')
                 score -= 100
@@ -311,7 +311,7 @@ def solve_wumpus_world(updated_map):
                 if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
                     stench_rooms.remove(current_position)
                     continue
-            if current_position[1]>0:
+            if current_position[1]>0 and (current_position[0],current_position[1]-1) not in safe_rooms:
                 # Shoot left
                 path_explored.append('Shoot the arrow left')
                 score -= 100
@@ -327,7 +327,7 @@ def solve_wumpus_world(updated_map):
                 if not ifcontains(updated_map[current_position[0]][current_position[1]], 'S'):
                     stench_rooms.remove(current_position)
                     continue
-            if current_position[1]<size-1:
+            if current_position[1]<size-1 and (current_position[0],current_position[1]+1) not in safe_rooms:
                 # Shoot right
                 path_explored.append('Shoot the arrow right')
                 score -= 100

@@ -129,7 +129,7 @@ def solve_wumpus_world(updated_map):
     start_position = None
     for i in range(len(updated_map)):
         for j in range(len(updated_map[i])):
-            if updated_map[i][j] == 'A':
+            if ifcontains(updated_map[i][j], 'A'):
                 start_position = (i, j)
                 break
         if start_position:
@@ -146,7 +146,8 @@ def solve_wumpus_world(updated_map):
     breeze_rooms = []
     path_explored = []
     empty_rooms = []
-
+    
+    path_explored.append(current_position)
     # Move until all gold is found or no more way to move
     while not game_over:
         move_to_next_room = False
@@ -215,27 +216,29 @@ def solve_wumpus_world(updated_map):
             if current_position not in stench_rooms:
                 stench_rooms.append(current_position)
             # move to the nearest empty room
-            path = find_path(current_position, empty_rooms[-1], safe_rooms)
-            if path:
-                    for room in path:
-                        if current_position == room:
-                            continue
-                        current_position = room
-                        path_explored.append(room)
-                        score -= 10
-                    continue
+            if empty_rooms:
+                path = find_path(current_position, empty_rooms[-1], safe_rooms)
+                if path:
+                        for room in path:
+                            if current_position == room:
+                                continue
+                            current_position = room
+                            path_explored.append(room)
+                            score -= 10
+                        continue
         if ifcontains(updated_map[current_position[0]][current_position[1]], 'B'):
             # The current room has stench
             if current_position not in breeze_rooms:
                 breeze_rooms.append(current_position)
             # move to the nearest empty room
-            path = find_path(current_position, empty_rooms[-1], safe_rooms)
-            if path:
-                for room in path:
-                    current_position = room
-                    path_explored.append(room)
-                    score -= 10
-                continue
+            if empty_rooms:
+                path = find_path(current_position, empty_rooms[-1], safe_rooms)
+                if path:
+                    for room in path:
+                        current_position = room
+                        path_explored.append(room)
+                        score -= 10
+                    continue
         neigh = get_neighbors(updated_map, current_position)
         for i in neigh:
             if i in safe_rooms and i not in path_explored:
@@ -247,23 +250,23 @@ def solve_wumpus_world(updated_map):
                 break
         if move_to_next_room:
             continue  
-        
         # Check if there is a safe room but not visited
-        for i in safe_rooms:
-            if i not in path_explored:
-                # Find a path to the target room through the safe rooms
-                
+        if safe_rooms:
+            for i in safe_rooms:
+                if i not in path_explored:
+                    # Find a path to the target room through the safe rooms
+                    
 
-                path = find_path(current_position, i, safe_rooms)
-                if path:
-                    for room in path:
-                        if current_position == room:
-                            continue
-                        current_position = room
-                        path_explored.append(room)
-                        score -= 10
-                    move_to_next_room = True
-                    break
+                    path = find_path(current_position, i, safe_rooms)
+                    if path:
+                        for room in path:
+                            if current_position == room:
+                                continue
+                            current_position = room
+                            path_explored.append(room)
+                            score -= 10
+                        move_to_next_room = True
+                        break
         if move_to_next_room:
             continue
         
@@ -273,6 +276,24 @@ def solve_wumpus_world(updated_map):
         foundstench=False
         for i in stench_rooms:
             if i not in breeze_rooms:
+                if i == current_position:
+                    foundstench=True
+                    break
+                path = find_path(current_position, stench_rooms[0], safe_rooms)
+                if path:
+                    for room in path:
+                        if current_position == room:
+                            continue
+                        current_position = room
+                        
+                        path_explored.append(room)
+                        score -= 10
+                foundstench=True
+        if not foundstench:
+            for i in stench_rooms:
+                if i == current_position:
+                    foundstench=True
+                    break
                 path = find_path(current_position, stench_rooms[0], safe_rooms)
                 if path:
                     for room in path:
@@ -288,6 +309,7 @@ def solve_wumpus_world(updated_map):
                 stench_rooms.remove(current_position)
                 continue
         if foundstench:
+            
             if current_position[0]>0 and (current_position[0]-1,current_position[1]) not in safe_rooms:
                 # Shoot up
                 
@@ -377,7 +399,7 @@ def solve_wumpus_world(updated_map):
                 break
         if move_to_next_room:
             continue 
-
+    score+=10
     return path_explored, score
            
         
@@ -385,7 +407,7 @@ def solve_wumpus_world(updated_map):
         
     
 
-file_path = 'map2.txt'
+file_path = 'map4.txt'
 map = read_map(file_path)
 updated_map = update_map(map)
 path, totalscore = solve_wumpus_world(updated_map)

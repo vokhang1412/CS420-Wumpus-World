@@ -222,14 +222,19 @@ def solve_wumpus_world(updated_map):
             up=agent_position[0]
             remove_top(up, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
             path_explored.pop()
+            agent_path.pop()
+            agent_path.append('U: '+agent_position[0].__str__())
             agent_position=real_position(agent_position,(1,0))
             path_explored.append('U'+real_position(agent_position,start_position).__str__())
+        
             continue
         
         if real_position(agent_position,start_position)[0]>size-1:
             down=agent_position[0]
             remove_bottom(down, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
             path_explored.pop()
+            agent_path.pop()
+            agent_path.append('D: '+agent_position[0].__str__())
             agent_position=real_position(agent_position,(-1,0))
             path_explored.append('D'+real_position(agent_position,start_position).__str__())
             continue
@@ -237,6 +242,8 @@ def solve_wumpus_world(updated_map):
             left=agent_position[1]
             remove_left(left, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
             path_explored.pop()
+            agent_path.pop()
+            agent_path.append('L: '+agent_position[1].__str__())
             agent_position=real_position(agent_position,(0,1))
             path_explored.append('L'+real_position(agent_position,start_position).__str__())
             continue
@@ -244,6 +251,8 @@ def solve_wumpus_world(updated_map):
             right=agent_position[1]
             remove_right(right, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
             path_explored.pop()
+            agent_path.pop()
+            agent_path.append('R: '+agent_position[1].__str__())
             agent_position=real_position(agent_position,(0,-1))
             path_explored.append('R'+real_position(agent_position,start_position).__str__())
             continue
@@ -521,7 +530,7 @@ def solve_wumpus_world(updated_map):
         
     
 
-file_path = 'map4.txt'
+file_path = 'map5.txt'
 map = read_map(file_path)
 updated_map = update_map(map)
 agent_path, path, totalscore = solve_wumpus_world(updated_map)

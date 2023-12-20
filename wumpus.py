@@ -413,4 +413,3 @@ updated_map = update_map(map)
 path, totalscore = solve_wumpus_world(updated_map)
 print('Path explored: ', path)
 print('Score: ', totalscore)
-                    

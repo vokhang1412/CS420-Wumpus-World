@@ -218,9 +218,6 @@ def solve_wumpus_world(updated_map):
     
     # Move until all gold is found or no more way to move
     while not game_over:
-        # print(real_position(agent_position,start_position))
-        # print(path_explored)
-        # time.sleep(2)
         if real_position(agent_position,start_position)[0]<0:
             up=agent_position[0]
             remove_top(up, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)

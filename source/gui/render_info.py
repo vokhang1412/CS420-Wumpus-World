@@ -14,19 +14,24 @@ class RenderInfo:
         self.map = new_wumpus.read_map(map_path)
         self.n = len(self.map)
         self.map = new_wumpus.update_map(self.map)
+        print(self.map)
         self.visited = []
         for i in range(len(self.map)):
             self.visited.append([False] * len(self.map[i]))
-        self.to_solve_map = self.map.copy()
+        self.to_solve_map = new_wumpus.read_map(map_path)
+        self.to_solve_map = new_wumpus.update_map(self.to_solve_map)
         tmp, self.path, self.score = new_wumpus.solve_wumpus_world(self.to_solve_map)
         print(self.score)
         self.score = 0
         self.current_pos = (0, 0)
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
-                if self.map[i][j] == 'A':
+                if self.map[i][j].find('A') != -1:
                     self.current_pos = (i, j)
-                    self.map[i][j] = '-'
+                    if self.map[i][j] == 'A':
+                        self.map[i][j] = '-'
+                    else:
+                        self.map[i][j] = self.map[i][j].replace('A', '')
         self.visited[self.current_pos[0]][self.current_pos[1]] = True
         self.is_bump = False
         self.is_scream = False
@@ -97,12 +102,10 @@ class RenderInfo:
                 if self.map[self.current_pos[0]][self.current_pos[1]] == 'G':
                     self.map[self.current_pos[0]][self.current_pos[1]] = '-'
                 else:
-                    self.map[self.current_pos[0]][self.current_pos[1]].replace('G', '')
-                self.map = new_wumpus.update_map(self.map)
+                    self.map[self.current_pos[0]][self.current_pos[1]] = self.map[self.current_pos[0]][self.current_pos[1]].replace('G', '')
         self.visited[self.current_pos[0]][self.current_pos[1]] = True
 
     def draw(self, surface):
-        print(self.score)
         # Draw the border for notification area
         pygame.draw.rect(surface, (0, 0, 0), (0, 0, self.SCREEN_WIDTH, 50))
         # Draw the border for the map (below the notification area)

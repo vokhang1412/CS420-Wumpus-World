@@ -432,69 +432,69 @@ def solve_wumpus_world(updated_map):
                 
                 path_explored.append('Shoot the arrow up')
                 score -= 100
-                
-                if ifcontains(updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]], 'W'):
-                    if updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]] == 'W':
-                        updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]] = '-'  # The wumpus is killed
-                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]-1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
-                    else:
-                        updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]] = removechar('W', updated_map[i][real_position(agent_position,start_position)[1]])
-                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]-1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
-                updated_map=update_map(updated_map)
-                if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
-                    stench_rooms.remove(agent_position)
-                    continue
+                if real_position(agent_position,start_position)[0]-1>=0:
+                    if ifcontains(updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]], 'W'):
+                        if updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]] == 'W':
+                            updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]] = '-'  # The wumpus is killed
+                            path_explored.append('W ('+(real_position(agent_position,start_position)[0]-1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
+                        else:
+                            updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]] = removechar('W', updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]])
+                            path_explored.append('W ('+(real_position(agent_position,start_position)[0]-1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
+                    updated_map=update_map(updated_map)
+                    if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
+                        stench_rooms.remove(agent_position)
+                        continue
             if agent_position[0]<down-1 and (agent_position[0]+1,agent_position[1]) not in safe_rooms:
                 # Shoot down
                 
                 path_explored.append('Shoot the arrow down')
                 score -= 100
-                
-                if ifcontains(updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]], 'W'):
-                    if updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]] == 'W':
-                        updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]] = '-'
-                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]+1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
-                    else:
-                        updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]] = removechar('W', updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]])
-                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]+1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
-                updated_map=update_map(updated_map)
-                if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
-                    stench_rooms.remove(agent_position)
-                    continue
+                if real_position(agent_position,start_position)[0]+1<=size-1:
+                    if ifcontains(updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]], 'W'):
+                        if updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]] == 'W':
+                            updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]] = '-'
+                            path_explored.append('W ('+(real_position(agent_position,start_position)[0]+1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
+                        else:
+                            updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]] = removechar('W', updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]])
+                            path_explored.append('W ('+(real_position(agent_position,start_position)[0]+1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
+                    updated_map=update_map(updated_map)
+                    if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
+                        stench_rooms.remove(agent_position)
+                        continue
             if agent_position[1]>left+1 and (agent_position[0],agent_position[1]-1) not in safe_rooms:
                 # Shoot left
                 
                 path_explored.append('Shoot the arrow left')
                 score -= 100
-                
-                if ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1], 'W'):
-                    if updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1] == 'W':
-                        updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1] = '-'
-                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]-1).__str__()+')')
-                    else:
-                        updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1] = removechar('W', updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1])
-                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]-1).__str__()+')')
-                updated_map=update_map(updated_map)
-                if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
-                    stench_rooms.remove(agent_position)
-                    continue
+                if real_position(agent_position,start_position)[1]-1>=0:
+                    if ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1], 'W'):
+                        if updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1] == 'W':
+                            updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1] = '-'
+                            path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]-1).__str__()+')')
+                        else:
+                            updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1] = removechar('W', updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1])
+                            path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]-1).__str__()+')')
+                    updated_map=update_map(updated_map)
+                    if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
+                        stench_rooms.remove(agent_position)
+                        continue
             if agent_position[1]<right-1 and (agent_position[0],agent_position[1]+1) not in safe_rooms:
                 # Shoot right
                 
                 path_explored.append('Shoot the arrow right')
                 score -= 100
-                
-                if ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1], 'W'):
-                    if updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1] == 'W':
-                        updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1] = '-'
-                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]+1).__str__()+')')
-                    else:
-                        updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1] = removechar('W', updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1])
-                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]+1).__str__()+')')
-                updated_map=update_map(updated_map)
-                if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
-                    stench_rooms.remove(agent_position)
-                    continue
+                if real_position(agent_position,start_position)[1]+1<=size-1:
+                    if ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1], 'W'):
+                        if updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1] == 'W':
+                            updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1] = '-'
+                            path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]+1).__str__()+')')
+                        else:
+                            updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1] = removechar('W', updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1])
+                            path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]+1).__str__()+')')
+                    updated_map=update_map(updated_map)
+                    if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
+                        stench_rooms.remove(agent_position)
+                        continue
                 
             
         #No more case left, move to breeze room

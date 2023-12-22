@@ -105,7 +105,7 @@ def get_neighbors(position,up,down,left,right):
     if position[1] < right-1:
         neighbors.append((position[0], position[1]+1))  # Move right
     return neighbors
-def find_path(current_position, target_room, safe_rooms,up,down,left,right):
+def find_path(current_position, target_room, safe_rooms, up, down, left, right):
     queue = deque([(current_position, [])])
     visited = set()
 
@@ -113,12 +113,11 @@ def find_path(current_position, target_room, safe_rooms,up,down,left,right):
         room, path = queue.popleft()
         if room == target_room:
             return path[1:] + [room]
-                        
+
         visited.add(room)
-        for neighbor in get_neighbors(room,up,down,left,right):
+        for neighbor in get_neighbors(room, up, down, left, right):
             if neighbor in safe_rooms and neighbor not in visited:
                 queue.append((neighbor, path + [room]))
-    
 
     return None
 def remove_top(top, safe_rooms, stench_rooms, breeze_rooms, empty_rooms):

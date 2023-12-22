@@ -440,6 +440,8 @@ def solve_wumpus_world(updated_map):
                         else:
                             updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]] = removechar('W', updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]])
                             path_explored.append('W ('+(real_position(agent_position,start_position)[0]-1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
+                        if real_position(agent_position,(-1,0)) not in safe_rooms:
+                            safe_rooms.append(real_position(agent_position,(-1,0)))
                     updated_map=update_map(updated_map)
                     if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
                         stench_rooms.remove(agent_position)
@@ -457,6 +459,8 @@ def solve_wumpus_world(updated_map):
                         else:
                             updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]] = removechar('W', updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]])
                             path_explored.append('W ('+(real_position(agent_position,start_position)[0]+1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
+                        if real_position(agent_position,(1,0)) not in safe_rooms:
+                            safe_rooms.append(real_position(agent_position,(1,0)))
                     updated_map=update_map(updated_map)
                     if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
                         stench_rooms.remove(agent_position)
@@ -474,6 +478,8 @@ def solve_wumpus_world(updated_map):
                         else:
                             updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1] = removechar('W', updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1])
                             path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]-1).__str__()+')')
+                        if real_position(agent_position,(0,-1)) not in safe_rooms:
+                            safe_rooms.append(real_position(agent_position,(0,-1)))
                     updated_map=update_map(updated_map)
                     if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
                         stench_rooms.remove(agent_position)
@@ -491,6 +497,8 @@ def solve_wumpus_world(updated_map):
                         else:
                             updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1] = removechar('W', updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1])
                             path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]+1).__str__()+')')
+                        if real_position(agent_position,(0,1)) not in safe_rooms:
+                            safe_rooms.append(real_position(agent_position,(0,1)))
                     updated_map=update_map(updated_map)
                     if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
                         stench_rooms.remove(agent_position)

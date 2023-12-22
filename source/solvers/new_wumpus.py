@@ -23,8 +23,6 @@ def read_map(file_path):
         size = int(file.readline().strip())
         map = [line.strip().split('.') for line in file.readlines()]
     
-    
-    
     return map
 def update_map(map):
     size=len(map)
@@ -96,7 +94,7 @@ def update_map(map):
         for j in range(size):
             map[i][j]=remove_duplicates(map[i][j])
     return map
-def get_neighbors(map, position,up,down,left,right):
+def get_neighbors(position,up,down,left,right):
     neighbors = []
     if position[0] > up+1:
         neighbors.append((position[0]-1, position[1]))  # Move up
@@ -117,7 +115,7 @@ def find_path(current_position, target_room, safe_rooms,up,down,left,right):
             return path[1:] + [room]
                         
         visited.add(room)
-        for neighbor in get_neighbors(updated_map, room,up,down,left,right):
+        for neighbor in get_neighbors(room,up,down,left,right):
             if neighbor in safe_rooms and neighbor not in visited:
                 queue.append((neighbor, path + [room]))
     
@@ -303,7 +301,7 @@ def solve_wumpus_world(updated_map):
                 empty_rooms.append(agent_position)
             if agent_position not in safe_rooms:
                 safe_rooms.append(agent_position)
-            neigh=get_neighbors(updated_map,agent_position,up,down,left,right)
+            neigh=get_neighbors(agent_position,up,down,left,right)
             for i in neigh:
                 if i not in safe_rooms:
                     safe_rooms.append(i)
@@ -353,7 +351,7 @@ def solve_wumpus_world(updated_map):
                         agent_path.append(agent_position)
                         score -= 10
                     continue
-        neigh = get_neighbors(updated_map, agent_position,up,down,left,right)
+        neigh = get_neighbors(agent_position,up,down,left,right)
         for i in neigh:
             if i in safe_rooms and i not in agent_path:
                 # Move to the next room
@@ -438,10 +436,10 @@ def solve_wumpus_world(updated_map):
                 if ifcontains(updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]], 'W'):
                     if updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]] == 'W':
                         updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]] = '-'  # The wumpus is killed
-                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]-1).__str__()+', '+real_position(agent_position,start_position)[1].__str__()+')')
+                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]-1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
                     else:
                         updated_map[real_position(agent_position,start_position)[0]-1][real_position(agent_position,start_position)[1]] = removechar('W', updated_map[i][real_position(agent_position,start_position)[1]])
-                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]-1).__str__()+', '+real_position(agent_position,start_position)[1].__str__()+')')
+                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]-1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
                     stench_rooms.remove(agent_position)
@@ -455,10 +453,10 @@ def solve_wumpus_world(updated_map):
                 if ifcontains(updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]], 'W'):
                     if updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]] == 'W':
                         updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]] = '-'
-                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]+1).__str__()+', '+real_position(agent_position,start_position)[1].__str__()+')')
+                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]+1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
                     else:
                         updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]] = removechar('W', updated_map[real_position(agent_position,start_position)[0]+1][real_position(agent_position,start_position)[1]])
-                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]+1).__str__()+', '+real_position(agent_position,start_position)[1].__str__()+')')
+                        path_explored.append('W ('+(real_position(agent_position,start_position)[0]+1).__str__()+','+real_position(agent_position,start_position)[1].__str__()+')')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
                     stench_rooms.remove(agent_position)
@@ -472,10 +470,10 @@ def solve_wumpus_world(updated_map):
                 if ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1], 'W'):
                     if updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1] == 'W':
                         updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1] = '-'
-                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+', '+(real_position(agent_position,start_position)[1]-1).__str__()+')')
+                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]-1).__str__()+')')
                     else:
                         updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1] = removechar('W', updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]-1])
-                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+', '+(real_position(agent_position,start_position)[1]-1).__str__()+')')
+                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]-1).__str__()+')')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
                     stench_rooms.remove(agent_position)
@@ -489,10 +487,10 @@ def solve_wumpus_world(updated_map):
                 if ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1], 'W'):
                     if updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1] == 'W':
                         updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1] = '-'
-                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+', '+(real_position(agent_position,start_position)[1]+1).__str__()+')')
+                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]+1).__str__()+')')
                     else:
                         updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1] = removechar('W', updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]+1])
-                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+', '+(real_position(agent_position,start_position)[1]+1).__str__()+')')
+                        path_explored.append('W ('+real_position(agent_position,start_position)[0].__str__()+','+(real_position(agent_position,start_position)[1]+1).__str__()+')')
                 updated_map=update_map(updated_map)
                 if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
                     stench_rooms.remove(agent_position)
@@ -510,7 +508,7 @@ def solve_wumpus_world(updated_map):
                     path_explored.append(real_position(agent_position,start_position))
                     agent_path.append(agent_position)
                     score -= 10
-        neigh=get_neighbors(updated_map,agent_position,up,down,left,right)
+        neigh=get_neighbors(agent_position,up,down,left,right)
         for i in neigh:
             if i not in agent_path:
                 # Move to the next room
@@ -524,11 +522,6 @@ def solve_wumpus_world(updated_map):
             continue 
     score+=10
     return agent_path,path_explored, score
-           
-        
-        
-        
-    
 
 # file_path = '../../map5.txt'
 # map = read_map(file_path)

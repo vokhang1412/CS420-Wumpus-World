@@ -19,11 +19,14 @@ class RenderInfo:
             self.visited.append([False] * len(self.map[i]))
         self.to_solve_map = self.map.copy()
         tmp, self.path, self.score = new_wumpus.solve_wumpus_world(self.to_solve_map)
+        print(self.score)
+        self.score = 0
         self.current_pos = (0, 0)
-        for i in range(len(self.path)):
-            for j in range(len(self.path[i])):
+        for i in range(len(self.map)):
+            for j in range(len(self.map[i])):
                 if self.map[i][j] == 'A':
                     self.current_pos = (i, j)
+                    self.map[i][j] = '-'
         self.visited[self.current_pos[0]][self.current_pos[1]] = True
         self.is_bump = False
         self.is_scream = False
@@ -32,6 +35,10 @@ class RenderInfo:
         self.bump_dir = ''
         self.shoot_dir = ''
         self.font = pygame.font.SysFont('Arial', 20)
+        self.is_done = False
+        self.center_x = self.SCREEN_WIDTH / 2 - self.CELL_SIZE * self.n / 2
+        self.center_y = self.SCREEN_HEIGHT / 2 - self.CELL_SIZE * self.n / 2
+        self.is_begin = True
 
 
     # [(2, 1), (1, 1), 'G(1, 1)', (2, 1), (3, 1), (2, 1), (2, 0), (2, 1), (2, 2), (2, 1), (1, 1), 'Shoot the arrow up', 'Shoot the arrow left', 'W (1, 0)', (2, 1), (2, 0), (1, 0), (0, 0), 'U(0, 0)', 'L(0, 0)', (0, 1), (0, 2), (0, 1), (1, 1), (2, 1), (3, 1), (3, 0)]
@@ -44,22 +51,32 @@ class RenderInfo:
     # If 'U, L, R, D' is in the item, a note "Wall <Dir>" will be rendered on the screen.
     # If 'G' is in the item, a note "Gold" will be rendered on the screen.
     # The position of the agent will be rendered with light green background, with the content of the room.
+    # Center the content of each cell in the middle of the cell.
         
     def update_next_step(self):
         if len(self.path) == 0:
+            self.is_done = True
             return
         tmp = self.path.pop(0)
+        print(tmp)
         if type(tmp) == tuple:
             self.current_pos = tmp
+            if self.is_begin:
+                self.is_begin = False
+            else:
+                self.score -= 10
         else:
             self.current_pos = self.current_pos
             if 'Shoot' in tmp:
                 self.is_shoot = True
                 self.shoot_dir = tmp.split(' ')[-1]
+                self.score -= 100
             elif 'W' in tmp:
                 self.is_scream = True
-                # get the position of the wumpus
-                wumpus_pos = tuple(tmp[2:-1].split(', '))
+                wumpus_pos = tmp.split(' ')[-1]
+                wumpus_pos = wumpus_pos.replace('(', '').replace(')', '').split(',')
+                # get the wumpus position
+                wumpus_pos = (int(wumpus_pos[0]), int(wumpus_pos[1]))
                 # update wumpus dead
                 self.map[int(wumpus_pos[0])][int(wumpus_pos[1])] = '-'
                 # update the map
@@ -76,64 +93,76 @@ class RenderInfo:
                     self.bump_dir = 'down'
             elif 'G' in tmp:
                 self.is_collect_gold = True
+                self.score += 1000
                 if self.map[self.current_pos[0]][self.current_pos[1]] == 'G':
                     self.map[self.current_pos[0]][self.current_pos[1]] = '-'
                 else:
-                    self.map[self.current_pos[0]][self.current_pos[1]].remove('G')
+                    self.map[self.current_pos[0]][self.current_pos[1]].replace('G', '')
                 self.map = new_wumpus.update_map(self.map)
         self.visited[self.current_pos[0]][self.current_pos[1]] = True
 
     def draw(self, surface):
-        # Draw the background of each cell
-        for row in range(self.n):
-            for col in range(self.n):
-                color = (0, 0, 0)
-                if self.visited[row][col]:
-                    color = (200, 200, 200)
-                pygame.draw.rect(surface, color, [(self.CELL_MARGIN + self.CELL_SIZE) * col + self.CELL_MARGIN,
-                                                   (self.CELL_MARGIN + self.CELL_SIZE) * row + self.CELL_MARGIN,
-                                                   self.CELL_SIZE,
-                                                   self.CELL_SIZE])
-        # Draw the content of each cell
-        for row in range(self.n):
-            for col in range(self.n):
-                if self.visited[row][col]:
-                    text = self.font.render(self.map[row][col], True, (0, 0, 0))
-                    surface.blit(text, [(self.CELL_MARGIN + self.CELL_SIZE) * col + self.CELL_MARGIN,
-                                        (self.CELL_MARGIN + self.CELL_SIZE) * row + self.CELL_MARGIN])
-        # Draw the agent
-        color = (0, 255, 0)
-        pygame.draw.rect(surface, color, [(self.CELL_MARGIN + self.CELL_SIZE) * self.current_pos[1] + self.CELL_MARGIN,
-                                           (self.CELL_MARGIN + self.CELL_SIZE) * self.current_pos[0] + self.CELL_MARGIN,
-                                           self.CELL_SIZE,
-                                           self.CELL_SIZE])
-        # Draw the notes (if any)
+        print(self.score)
+        # Draw the border for notification area
+        pygame.draw.rect(surface, (0, 0, 0), (0, 0, self.SCREEN_WIDTH, 50))
+        # Draw the border for the map (below the notification area)
+        pygame.draw.rect(surface, (0, 0, 0), (0, 50, self.SCREEN_WIDTH, self.SCREEN_HEIGHT - 50))
+        # Draw the base map
+        for i in range(self.n):
+            for j in range(self.n):
+                pygame.draw.rect(surface, (255, 255, 255), (self.center_x + j * self.CELL_SIZE, self.center_y + i * self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE), 1)
+        # Draw the visited cells
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.visited[i][j]:
+                    pygame.draw.rect(surface, (200, 200, 200), (self.center_x + j * self.CELL_SIZE + self.CELL_MARGIN, self.center_y + i * self.CELL_SIZE + self.CELL_MARGIN, self.CELL_SIZE - 2 * self.CELL_MARGIN, self.CELL_SIZE - 2 * self.CELL_MARGIN))
+                    text = self.font.render(self.map[i][j], True, (0, 0, 0))
+                    text_rect = text.get_rect()
+                    text_rect.center = (self.center_x + j * self.CELL_SIZE + self.CELL_SIZE / 2, self.center_y + i * self.CELL_SIZE + self.CELL_SIZE / 2)
+                    surface.blit(text, text_rect)
+                else:
+                    pygame.draw.rect(surface, (0, 0, 0), (self.center_x + j * self.CELL_SIZE + self.CELL_MARGIN, self.center_y + i * self.CELL_SIZE + self.CELL_MARGIN, self.CELL_SIZE - 2 * self.CELL_MARGIN, self.CELL_SIZE - 2 * self.CELL_MARGIN))
+                    text = self.font.render('?', True, (255, 255, 255))
+                    text_rect = text.get_rect()
+                    text_rect.center = (self.center_x + j * self.CELL_SIZE + self.CELL_SIZE / 2, self.center_y + i * self.CELL_SIZE + self.CELL_SIZE / 2)
+                    surface.blit(text, text_rect)
+        # Draw the current position of the agent (reveal the content of the room)
+        pygame.draw.rect(surface, (0, 255, 0), (self.center_x + self.current_pos[1] * self.CELL_SIZE + self.CELL_MARGIN, self.center_y + self.current_pos[0] * self.CELL_SIZE + self.CELL_MARGIN, self.CELL_SIZE - 2 * self.CELL_MARGIN, self.CELL_SIZE - 2 * self.CELL_MARGIN))
+        text = self.font.render(self.map[self.current_pos[0]][self.current_pos[1]], True, (0, 0, 0))
+        text_rect = text.get_rect()
+        text_rect.center = (self.center_x + self.current_pos[1] * self.CELL_SIZE + self.CELL_SIZE / 2, self.center_y + self.current_pos[0] * self.CELL_SIZE + self.CELL_SIZE / 2)
+        surface.blit(text, text_rect)
+        # Draw the notification (if any)
         if self.is_bump:
-            text = self.font.render('Wall ' + self.bump_dir, True, (0, 0, 0))
-            surface.blit(text, [self.SCREEN_WIDTH - 200, 0])
+            text = self.font.render('Bump ' + self.bump_dir, True, (255, 0, 0))
+            text_rect = text.get_rect()
+            text_rect.center = (self.SCREEN_WIDTH / 2, 25)
+            surface.blit(text, text_rect)
             self.is_bump = False
         if self.is_scream:
-            text = self.font.render('Argghh', True, (0, 0, 0))
-            surface.blit(text, [self.SCREEN_WIDTH - 200, 0])
+            text = self.font.render('Argghh', True, (255, 0, 0))
+            text_rect = text.get_rect()
+            text_rect.center = (self.SCREEN_WIDTH / 2, 25)
+            surface.blit(text, text_rect)
             self.is_scream = False
         if self.is_shoot:
-            text = self.font.render('Shoot ' + self.shoot_dir, True, (0, 0, 0))
-            surface.blit(text, [self.SCREEN_WIDTH - 200, 0])
+            text = self.font.render('Shoot ' + self.shoot_dir, True, (255, 0, 0))
+            text_rect = text.get_rect()
+            text_rect.center = (self.SCREEN_WIDTH / 2, 25)
+            surface.blit(text, text_rect)
             self.is_shoot = False
         if self.is_collect_gold:
-            text = self.font.render('Gold Collected', True, (0, 0, 0))
-            surface.blit(text, [self.SCREEN_WIDTH - 200, 0])
+            text = self.font.render('Gold', True, (255, 0, 0))
+            text_rect = text.get_rect()
+            text_rect.center = (self.SCREEN_WIDTH / 2, 25)
+            surface.blit(text, text_rect)
             self.is_collect_gold = False
-        # Draw the cover for unvisited cells
-        for row in range(self.n):
-            for col in range(self.n):
-                if not self.visited[row][col]:
-                    color = (0, 0, 0)
-                    pygame.draw.rect(surface, color, [(self.CELL_MARGIN + self.CELL_SIZE) * col + self.CELL_MARGIN,
-                                                       (self.CELL_MARGIN + self.CELL_SIZE) * row + self.CELL_MARGIN,
-                                                       self.CELL_SIZE,
-                                                       self.CELL_SIZE])
-                    text = self.font.render('?', True, (255, 255, 255))
-                    surface.blit(text, [(self.CELL_MARGIN + self.CELL_SIZE) * col + self.CELL_MARGIN,
-                                        (self.CELL_MARGIN + self.CELL_SIZE) * row + self.CELL_MARGIN])
-                    
+        # Draw the score
+        text = self.font.render('Score: ' + str(self.score), True, (255, 255, 255))
+        text_rect = text.get_rect()
+        text_rect.center = (self.SCREEN_WIDTH - 100, 25)
+        surface.blit(text, text_rect)
+
+
+        
+

@@ -530,11 +530,11 @@ def solve_wumpus_world(updated_map):
         
     
 
-file_path = 'map5.txt'
-map = read_map(file_path)
-updated_map = update_map(map)
-agent_path, path, totalscore = solve_wumpus_world(updated_map)
-print('Agent path: ', agent_path)
-print('Path explored: ', path)
-print('Score: ', totalscore)
+# file_path = '../../map5.txt'
+# map = read_map(file_path)
+# updated_map = update_map(map)
+# agent_path, path, totalscore = solve_wumpus_world(updated_map)
+# print('Agent path: ', agent_path)
+# print('Path explored: ', path)
+# print('Score: ', totalscore)
                     

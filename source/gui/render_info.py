@@ -14,14 +14,12 @@ class RenderInfo:
         self.map = new_wumpus.read_map(map_path)
         self.n = len(self.map)
         self.map = new_wumpus.update_map(self.map)
-        print(self.map)
         self.visited = []
         for i in range(len(self.map)):
             self.visited.append([False] * len(self.map[i]))
         self.to_solve_map = new_wumpus.read_map(map_path)
         self.to_solve_map = new_wumpus.update_map(self.to_solve_map)
         tmp, self.path, self.score = new_wumpus.solve_wumpus_world(self.to_solve_map)
-        print(self.score)
         self.score = 0
         self.current_pos = (0, 0)
         for i in range(len(self.map)):
@@ -63,7 +61,6 @@ class RenderInfo:
             self.is_done = True
             return
         tmp = self.path.pop(0)
-        print(tmp)
         if type(tmp) == tuple:
             self.current_pos = tmp
             if self.is_begin:

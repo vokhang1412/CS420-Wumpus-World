@@ -30,6 +30,7 @@ class Displayer:
                     return
             if self.render_info.is_done:
                 pygame.time.wait(5000)
+                print('Score: ' + str(self.render_info.score))
                 pygame.quit()
                 return
             self.delta_time = self.clock.tick(self.fps) / 1000

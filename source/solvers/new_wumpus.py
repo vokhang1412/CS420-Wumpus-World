@@ -537,4 +537,3 @@ def solve_wumpus_world(updated_map):
 # print('Agent path: ', agent_path)
 # print('Path explored: ', path)
 # print('Score: ', totalscore)
-                    

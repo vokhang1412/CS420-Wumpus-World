@@ -530,7 +530,7 @@ def solve_wumpus_world(updated_map):
     score+=10
     return agent_path,path_explored, score
 
-# file_path = '../../map5.txt'
+# file_path = '../map/map1.txt'
 # map = read_map(file_path)
 # updated_map = update_map(map)
 # agent_path, path, totalscore = solve_wumpus_world(updated_map)

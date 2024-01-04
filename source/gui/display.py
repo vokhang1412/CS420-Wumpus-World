@@ -33,10 +33,6 @@ class Displayer:
             if self.render_info.is_done:
                 pygame.time.wait(3000)
                 print('Score: ' + str(self.render_info.score))
-                # output the path explored and score to a file
-                f = open('./output/' + self.map_name + '.txt', 'w')
-                f.write('Score: ' + str(self.render_info.score) + '\n')
-                f.write('Path explored: ' + str(self.path) + '\n')
                 pygame.quit()
                 return
             self.delta_time = self.clock.tick(self.fps) / 1000

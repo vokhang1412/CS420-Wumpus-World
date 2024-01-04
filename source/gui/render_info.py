@@ -20,7 +20,6 @@ class RenderInfo:
         self.to_solve_map = new_wumpus.read_map(map_path)
         self.to_solve_map = new_wumpus.update_map(self.to_solve_map)
         tmp, self.path, self.score = new_wumpus.solve_wumpus_world(self.to_solve_map)
-        print(self.path)
         self.score = 0
         self.current_pos = (0, 0)
         for i in range(len(self.map)):

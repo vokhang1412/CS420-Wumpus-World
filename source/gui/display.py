@@ -6,6 +6,7 @@ period = 0.5
 
 class Displayer:
     def __init__(self, map_name):
+        self.map_name = map_name
         self.delta_time = 0
         self.accu_time = 0
         pygame.init()
@@ -15,6 +16,7 @@ class Displayer:
         self.fps = 60
 
         self.render_info = RenderInfo('./map/' + map_name + '.txt')
+        self.path = self.render_info.path.copy()
 
         self.surface = pygame.Surface((self.render_info.SCREEN_WIDTH, self.render_info.SCREEN_HEIGHT), pygame.SRCALPHA)
         self.center_x = self.render_info.SCREEN_WIDTH / 2 - self.render_info.CELL_SIZE * self.render_info.n / 2
@@ -29,8 +31,12 @@ class Displayer:
                     pygame.quit()
                     return
             if self.render_info.is_done:
-                pygame.time.wait(5000)
+                pygame.time.wait(3000)
                 print('Score: ' + str(self.render_info.score))
+                # output the path explored and score to a file
+                f = open('./output/' + self.map_name + '.txt', 'w')
+                f.write('Score: ' + str(self.render_info.score) + '\n')
+                f.write('Path explored: ' + str(self.path) + '\n')
                 pygame.quit()
                 return
             self.delta_time = self.clock.tick(self.fps) / 1000

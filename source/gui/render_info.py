@@ -20,6 +20,7 @@ class RenderInfo:
         self.to_solve_map = new_wumpus.read_map(map_path)
         self.to_solve_map = new_wumpus.update_map(self.to_solve_map)
         tmp, self.path, self.score = new_wumpus.solve_wumpus_world(self.to_solve_map)
+        print(self.path)
         self.score = 0
         self.current_pos = (0, 0)
         for i in range(len(self.map)):
@@ -42,19 +43,14 @@ class RenderInfo:
         self.center_x = self.SCREEN_WIDTH / 2 - self.CELL_SIZE * self.n / 2
         self.center_y = self.SCREEN_HEIGHT / 2 - self.CELL_SIZE * self.n / 2
         self.is_begin = True
+        self.agent_map = []
 
 
-    # [(2, 1), (1, 1), 'G(1, 1)', (2, 1), (3, 1), (2, 1), (2, 0), (2, 1), (2, 2), (2, 1), (1, 1), 'Shoot the arrow up', 'Shoot the arrow left', 'W (1, 0)', (2, 1), (2, 0), (1, 0), (0, 0), 'U(0, 0)', 'L(0, 0)', (0, 1), (0, 2), (0, 1), (1, 1), (2, 1), (3, 1), (3, 0)]
-    # This is an example of the path returned by the solver. It is a list of tuples and strings.
-    # Tuples are coordinates, strings are actions.
-    # If the room is not visited, it will be rendered as a '?' with a black background.
-    # If the room is visited, it will be rendered as the content of the room with a light gray background.
-    # If 'Shoot' is in the item, a note "Shoot <Dir>" will be rendered on the screen.
-    # If 'W' is in the item, a note "Argghh" will be rendered on the screen.
-    # If 'U, L, R, D' is in the item, a note "Wall <Dir>" will be rendered on the screen.
-    # If 'G' is in the item, a note "Gold" will be rendered on the screen.
-    # The position of the agent will be rendered with light green background, with the content of the room.
-    # Center the content of each cell in the middle of the cell.
+    # [(2, 1), [['x', 'x', 'x', 'x'], ['x', 'x', 'x', 'x'], ['x', 'x', 'x', 'x'], ['x', 'x', 'x', 'x']], (1, 1), [['x', 'x', 'x', 'x'], ['x', 'x', 'x', 'x'], ['x', '-', 'x', 'x'], ['x', 'x', 'x', 'x']], 'G(1, 1)', (2, 1), [['x', 'x', 'x', 'x'], ['x', 'SB', 'x', 'x'], ['x', '-', 'x', 'x'], ['x', 'x', 'x', 'x']], (3, 1), [['x', 'x', 'x', 'x'], ['x', 'SB', 'x', 'x'], ['x', '-', 'x', 'x'], ['x', 'x', 'x', 'x']], (2, 1), [['x', 'x', 'x', 'x'], ['x', 'SB', 'x', 'x'], ['x', '-', 'x', 'x'], ['x', 'B', 'x', 'x']], (2, 0), [['x', 'x', 'x', 'x'], ['x', 'SB', 'x', 'x'], ['x', '-', 'x', 'x'], ['x', 'B', 'x', 'x']], (2, 1), [['x', 'x', 'x', 'x'], ['x', 'SB', 'x', 'x'], ['S', '-', 'x', 'x'], ['x', 'B', 'x', 'x']], (2, 2), [['x', 'x', 'x', 'x'], ['x', 'SB', 'x', 'x'], ['S', '-', 'x', 'x'], ['x', 'B', 'x', 'x']], (2, 1), [['x', 'x', 'x', 'x'], ['x', 'SB', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], (1, 1), [['x', 'x', 'x', 'x'], ['x', 'SB', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], 'Shoot the arrow up', 'Shoot the arrow left', 'W (1,0)', (2, 1), [['x', 'x', 'x', 'x'], ['x', 'B', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], (1, 1), [['x', 'x', 'x', 'x'], ['x', 'B', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], (1, 0), [['x', 'x', 'x', 'x'], ['x', 'B', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], (0, 0), [['x', 'x', 'x', 'x'], ['-', 'B', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], 'U(0, 0)', 'L(0, 0)', (0, 1), [['-', 'x', 'x', 'x'], ['-', 'B', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], (0, 2), [['-', '-', 'x', 'x'], ['-', 'B', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], (0, 1), [['-', '-', 'B', 'x'], ['-', 'B', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], (1, 1), [['-', '-', 'B', 'x'], ['-', 'B', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], (2, 1), [['-', '-', 'B', 'x'], ['-', 'B', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], (2, 0), [['-', '-', 'B', 'x'], ['-', 'B', 'x', 'x'], ['S', '-', 'B', 'x'], ['x', 'B', 'x', 'x']], (3, 0), [['-', '-', 'B', 'x'], ['-', 'B', 'x', 'x'], ['-', '-', 'B', 'x'], ['x', 'B', 'x', 'x']]]
+    # The path has changed
+    # Now, after each (int, int) is the currrent map from the agent's perspective.
+    # The action remains the same
+    # We have to render the map from the agent's perspective
         
     def update_next_step(self):
         if len(self.path) == 0:
@@ -63,6 +59,9 @@ class RenderInfo:
         tmp = self.path.pop(0)
         if type(tmp) == tuple:
             self.current_pos = tmp
+            self.agent_map = self.path.pop(0)
+            if self.map[self.current_pos[0]][self.current_pos[1]].find('G') != -1:
+                self.agent_map[self.current_pos[0]][self.current_pos[1]] = self.agent_map[self.current_pos[0]][self.current_pos[1]] + 'G'
             if self.is_begin:
                 self.is_begin = False
             else:
@@ -93,12 +92,15 @@ class RenderInfo:
                     self.bump_dir = 'right'
                 elif 'D' in tmp:
                     self.bump_dir = 'down'
+                self.agent_map = self.path.pop(0)
             elif 'G' in tmp:
                 self.is_collect_gold = True
                 self.score += 1000
-                if self.map[self.current_pos[0]][self.current_pos[1]] == 'G':
+                if self.agent_map[self.current_pos[0]][self.current_pos[1]] == 'G':
+                    self.agent_map[self.current_pos[0]][self.current_pos[1]] = '-'
                     self.map[self.current_pos[0]][self.current_pos[1]] = '-'
                 else:
+                    self.agent_map[self.current_pos[0]][self.current_pos[1]] = self.agent_map[self.current_pos[0]][self.current_pos[1]].replace('G', '')
                     self.map[self.current_pos[0]][self.current_pos[1]] = self.map[self.current_pos[0]][self.current_pos[1]].replace('G', '')
         self.visited[self.current_pos[0]][self.current_pos[1]] = True
 
@@ -116,7 +118,7 @@ class RenderInfo:
             for j in range(self.n):
                 if self.visited[i][j]:
                     pygame.draw.rect(surface, (200, 200, 200), (self.center_x + j * self.CELL_SIZE + self.CELL_MARGIN, self.center_y + i * self.CELL_SIZE + self.CELL_MARGIN, self.CELL_SIZE - 2 * self.CELL_MARGIN, self.CELL_SIZE - 2 * self.CELL_MARGIN))
-                    text = self.font.render(self.map[i][j], True, (0, 0, 0))
+                    text = self.font.render(self.agent_map[i][j], True, (0, 0, 0))
                     text_rect = text.get_rect()
                     text_rect.center = (self.center_x + j * self.CELL_SIZE + self.CELL_SIZE / 2, self.center_y + i * self.CELL_SIZE + self.CELL_SIZE / 2)
                     surface.blit(text, text_rect)
@@ -128,7 +130,7 @@ class RenderInfo:
                     surface.blit(text, text_rect)
         # Draw the current position of the agent (reveal the content of the room)
         pygame.draw.rect(surface, (0, 255, 0), (self.center_x + self.current_pos[1] * self.CELL_SIZE + self.CELL_MARGIN, self.center_y + self.current_pos[0] * self.CELL_SIZE + self.CELL_MARGIN, self.CELL_SIZE - 2 * self.CELL_MARGIN, self.CELL_SIZE - 2 * self.CELL_MARGIN))
-        text = self.font.render(self.map[self.current_pos[0]][self.current_pos[1]], True, (0, 0, 0))
+        text = self.font.render(self.agent_map[self.current_pos[0]][self.current_pos[1]], True, (0, 0, 0))
         text_rect = text.get_rect()
         text_rect.center = (self.center_x + self.current_pos[1] * self.CELL_SIZE + self.CELL_SIZE / 2, self.center_y + self.current_pos[0] * self.CELL_SIZE + self.CELL_SIZE / 2)
         surface.blit(text, text_rect)
@@ -162,7 +164,3 @@ class RenderInfo:
         text_rect = text.get_rect()
         text_rect.center = (self.SCREEN_WIDTH - 100, 25)
         surface.blit(text, text_rect)
-
-
-        
-

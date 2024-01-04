@@ -24,6 +24,60 @@ def read_map(file_path):
         map = [line.strip().split('.') for line in file.readlines()]
     
     return map
+def check(map, agent_position, start_position, safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path,path_explored,up,down,left,right):
+    size = len(map[0])
+    if real_position(agent_position,start_position)[0]<0:
+        up=agent_position[0]
+        remove_top(up, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
+        path_explored.pop()
+        agent_path.pop()
+        agent_path.append('U: '+agent_position[0].__str__())
+        agent_position=real_position(agent_position,(1,0))
+        path_explored.append('U'+real_position(agent_position,start_position).__str__())
+        
+        return agent_position,safe_rooms,empty_rooms, stench_rooms, breeze_rooms, agent_path,path_explored,up,down,left,right
+        
+    if real_position(agent_position,start_position)[0]>size-1:
+        down=agent_position[0]
+        remove_bottom(down, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
+        path_explored.pop()
+        agent_path.pop()
+        agent_path.append('D: '+agent_position[0].__str__())
+        agent_position=real_position(agent_position,(-1,0))
+        path_explored.append('D'+real_position(agent_position,start_position).__str__())
+        return agent_position,safe_rooms,empty_rooms, stench_rooms, breeze_rooms, agent_path,path_explored,up,down,left,right
+    if real_position(agent_position,start_position)[1]<0:
+        left=agent_position[1]
+        remove_left(left, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
+        path_explored.pop()
+        agent_path.pop()
+        agent_path.append('L: '+agent_position[1].__str__())
+        agent_position=real_position(agent_position,(0,1))
+        path_explored.append('L'+real_position(agent_position,start_position).__str__())
+        return agent_position,safe_rooms,empty_rooms, stench_rooms, breeze_rooms, agent_path,path_explored,up,down,left,right
+    if real_position(agent_position,start_position)[1]>size-1:
+        right=agent_position[1]
+        remove_right(right, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
+        path_explored.pop()
+        agent_path.pop()
+        agent_path.append('R: '+agent_position[1].__str__())
+        agent_position=real_position(agent_position,(0,-1))
+        path_explored.append('R'+real_position(agent_position,start_position).__str__())
+        return agent_position,safe_rooms,empty_rooms, stench_rooms, breeze_rooms, agent_path,path_explored,up,down,left,right
+    real_pos = real_position(agent_position, start_position)
+    
+    if not ifcontains(map[real_pos[0]][real_pos[1]], 'S') and not ifcontains(map[real_pos[0]][real_pos[1]], 'B'):
+        if agent_position not in empty_rooms:
+            empty_rooms.append(agent_position)
+    if ifcontains(map[real_pos[0]][real_pos[1]], 'S'):
+        if agent_position not in stench_rooms:
+            stench_rooms.append(agent_position)
+    if ifcontains(map[real_pos[0]][real_pos[1]], 'B'):
+        if agent_position not in breeze_rooms:
+            breeze_rooms.append(agent_position)
+    
+    return agent_position,safe_rooms,empty_rooms, stench_rooms, breeze_rooms, agent_path,path_explored,up,down,left,right
+
 def update_map(map):
     size=len(map)
     for i in range(size):
@@ -178,7 +232,18 @@ def remove_right(right, safe_rooms, stench_rooms, breeze_rooms, empty_rooms):
     return safe_rooms, stench_rooms, breeze_rooms, empty_rooms
 def real_position(agent_position,start_position):
     return (agent_position[0]+start_position[0],agent_position[1]+start_position[1])
-
+def map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position):
+    map = [['x' for i in range(size)] for j in range(size)]
+    for room in empty_rooms:
+        map[real_position(room,start_position)[0]][real_position(room,start_position)[1]] = '-'
+    for room in stench_rooms:
+        map[real_position(room,start_position)[0]][real_position(room,start_position)[1]] = 'S'
+    for room in breeze_rooms:
+        if map[real_position(room,start_position)[0]][real_position(room,start_position)[1]] == 'S':
+            map[real_position(room,start_position)[0]][real_position(room,start_position)[1]] = 'SB'
+        else:
+            map[real_position(room,start_position)[0]][real_position(room,start_position)[1]] = 'B'
+    return map
 def solve_wumpus_world(updated_map):
     score = 0
     size = len(updated_map[0])
@@ -210,49 +275,15 @@ def solve_wumpus_world(updated_map):
     down=11
     left=-11
     right=11
-    path_explored.append(current_position)
+    
+    path_explored.append(real_position(agent_position,start_position)) 
+    agent_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right=check(updated_map,agent_position, start_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right)
+    path_explored.append(map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position))
     agent_path.append(agent_position)
     
     # Move until all gold is found or no more way to move
     while not game_over:
-        if real_position(agent_position,start_position)[0]<0:
-            up=agent_position[0]
-            remove_top(up, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
-            path_explored.pop()
-            agent_path.pop()
-            agent_path.append('U: '+agent_position[0].__str__())
-            agent_position=real_position(agent_position,(1,0))
-            path_explored.append('U'+real_position(agent_position,start_position).__str__())
         
-            continue
-        
-        if real_position(agent_position,start_position)[0]>size-1:
-            down=agent_position[0]
-            remove_bottom(down, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
-            path_explored.pop()
-            agent_path.pop()
-            agent_path.append('D: '+agent_position[0].__str__())
-            agent_position=real_position(agent_position,(-1,0))
-            path_explored.append('D'+real_position(agent_position,start_position).__str__())
-            continue
-        if real_position(agent_position,start_position)[1]<0:
-            left=agent_position[1]
-            remove_left(left, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
-            path_explored.pop()
-            agent_path.pop()
-            agent_path.append('L: '+agent_position[1].__str__())
-            agent_position=real_position(agent_position,(0,1))
-            path_explored.append('L'+real_position(agent_position,start_position).__str__())
-            continue
-        if real_position(agent_position,start_position)[1]>size-1:
-            right=agent_position[1]
-            remove_right(right, safe_rooms, stench_rooms, breeze_rooms, empty_rooms)
-            path_explored.pop()
-            agent_path.pop()
-            agent_path.append('R: '+agent_position[1].__str__())
-            agent_position=real_position(agent_position,(0,-1))
-            path_explored.append('R'+real_position(agent_position,start_position).__str__())
-            continue
         move_to_next_room = False
         if ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]],'W') or ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]],'P'):
             score-=10000
@@ -276,7 +307,11 @@ def solve_wumpus_world(updated_map):
                             continue
                 agent_position = room
                 path_explored.append(real_position(agent_position,start_position))
+                
                 agent_path.append(agent_position)
+                agent_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right=check(updated_map,agent_position, start_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right)
+                path_explored.append(map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position))
+                
                 score -= 10
             continue
         # Check if this room in stench room but now don't have stench
@@ -310,7 +345,11 @@ def solve_wumpus_world(updated_map):
                     # Move to the next room
                     agent_position = i
                     path_explored.append(real_position(agent_position,start_position))
+                    
                     agent_path.append(agent_position)
+                    agent_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right=check(updated_map,agent_position, start_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right)
+                    path_explored.append(map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position))
+                    
                     score -= 10
                     move_to_next_room = True
                   
@@ -333,7 +372,11 @@ def solve_wumpus_world(updated_map):
                                 continue
                             agent_position = room
                             path_explored.append(real_position(agent_position,start_position))
+                            
                             agent_path.append(agent_position)
+                            agent_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right=check(updated_map,agent_position, start_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right)
+                            path_explored.append(map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position))
+                            
                             score -= 10
                         continue
         if ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'B'):
@@ -347,7 +390,11 @@ def solve_wumpus_world(updated_map):
                     for room in path:
                         agent_position = room
                         path_explored.append(real_position(agent_position,start_position))
+                        
                         agent_path.append(agent_position)
+                        agent_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right=check(updated_map,agent_position, start_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right)
+                        path_explored.append(map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position))
+                        
                         score -= 10
                     continue
         neigh = get_neighbors(agent_position,up,down,left,right)
@@ -356,7 +403,11 @@ def solve_wumpus_world(updated_map):
                 # Move to the next room
                 agent_position = i
                 path_explored.append(real_position(agent_position,start_position))
+                
                 agent_path.append(agent_position)
+                agent_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right=check(updated_map,agent_position, start_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right)
+
+                path_explored.append(map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position))
                 score -= 10
                 move_to_next_room = True
                 break
@@ -377,7 +428,11 @@ def solve_wumpus_world(updated_map):
                                 continue
                             agent_position = room
                             path_explored.append(real_position(agent_position,start_position))
+                            
                             agent_path.append(agent_position)
+                            agent_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right=check(updated_map,agent_position, start_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right)
+                            path_explored.append(map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position))
+                            
                             score -= 10
                         move_to_next_room = True
                         break
@@ -401,7 +456,11 @@ def solve_wumpus_world(updated_map):
                         agent_position = room
                         
                         path_explored.append(real_position(agent_position,start_position))
+                        
                         agent_path.append(agent_position)
+                        agent_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right=check(updated_map,agent_position, start_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right)
+                        path_explored.append(map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position))
+                        
                         score -= 10
                 foundstench=True
         if not foundstench:
@@ -417,7 +476,11 @@ def solve_wumpus_world(updated_map):
                         agent_position = room
                         
                         path_explored.append(real_position(agent_position,start_position))
+                        
                         agent_path.append(agent_position)
+                        agent_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right=check(updated_map,agent_position, start_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right)
+                        path_explored.append(map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position))
+
                         score -= 10
                 foundstench=True
         if not ifcontains(updated_map[real_position(agent_position,start_position)[0]][real_position(agent_position,start_position)[1]], 'S'):
@@ -513,7 +576,11 @@ def solve_wumpus_world(updated_map):
                             continue
                     agent_position = room
                     path_explored.append(real_position(agent_position,start_position))
+                    
                     agent_path.append(agent_position)
+                    agent_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right=check(updated_map,agent_position, start_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right)
+                    path_explored.append(map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position))
+                    
                     score -= 10
         neigh=get_neighbors(agent_position,up,down,left,right)
         for i in neigh:
@@ -521,7 +588,11 @@ def solve_wumpus_world(updated_map):
                 # Move to the next room
                 agent_position = i
                 path_explored.append(real_position(agent_position,start_position))
+                
                 agent_path.append(agent_position)
+                agent_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right=check(updated_map,agent_position, start_position,safe_rooms, empty_rooms, stench_rooms, breeze_rooms, agent_path, path_explored,up,down,left,right)
+                path_explored.append(map_from_rooms(size, empty_rooms, stench_rooms, breeze_rooms, start_position))
+
                 score -= 10
                 move_to_next_room = True
                 break
@@ -537,3 +608,4 @@ def solve_wumpus_world(updated_map):
 # print('Agent path: ', agent_path)
 # print('Path explored: ', path)
 # print('Score: ', totalscore)
+                    
